@@ -10,9 +10,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model user {
+  id           String  @id @default(uuid())
+  customerName String  @unique
+  order        order[]
+}
+
+model order {
+  id        String   @id @unique
+  book      book[]
+  user      user?    @relation(fields: [createdBy], references: [id])
+  createdBy String?
+  quantity  Int      @default(1)
+  timestamp DateTime @default(now())
+}
+
 model book {
-  id        Int     @id @default(autoincrement())
-  name      String
-  type      String
-  available Boolean  @default(false)   
+  id            Int     @id @default(autoincrement())
+  name          String
+  author        String
+  type          String
+  price         Float   @default(3.00)
+  current_stock Int     @default(0)
+  available     Boolean @default(false)
+  order         order?  @relation(fields: [orderId], references: [id])
+  orderId       String?
+}
+
+enum type {
+  Fiction
+  Nonfiction
 }
